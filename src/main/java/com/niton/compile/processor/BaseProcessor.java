@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.time.ZonedDateTime;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -15,6 +17,9 @@ import javax.annotation.processing.Generated;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.TypeElement;
+
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.JavaFile;
@@ -65,7 +70,7 @@ public abstract class BaseProcessor extends AbstractProcessor implements Process
     protected boolean logClassWriting;
 
     @Override
-    public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnvironment)
+    public boolean process(@NotNull Set<? extends TypeElement> annotations, @NotNull RoundEnvironment roundEnvironment)
     {
         return endpoint.process(annotations, roundEnvironment);
     }
@@ -75,23 +80,25 @@ public abstract class BaseProcessor extends AbstractProcessor implements Process
      *
      * @see #process(Set, RoundEnvironment)
      */
-    public abstract boolean performProcessing(Set<? extends TypeElement> annotations, RoundEnvironment roundEnvironment);
+    public abstract boolean performProcessing(@NotNull Set<? extends TypeElement> annotations,
+        @NotNull RoundEnvironment roundEnvironment);
 
     @Override
-    public synchronized void init(ProcessingEnvironment processingEnv)
+    public synchronized void init(@NotNull ProcessingEnvironment processingEnv)
     {
         super.init(processingEnv);
-        logger = new ProcessingLogger(processingEnv);
+        logger = new ProcessingLogger(processingEnv.getMessager());
         verifier = new ProcessingVerifier(processingEnv, logger);
         endpoint = this::performProcessing;
         applyInterceptors(processingEnv);
     }
 
-    private void applyInterceptors(ProcessingEnvironment processingEnv)
+    private void applyInterceptors(@NotNull ProcessingEnvironment processingEnv)
     {
         if (applyJavacBugWorkaround())
             endpoint = new LastRoundInterceptor(processingEnv, logger, verifier).processable(endpoint);
-        var interceptors = getInterceptors(processingEnv, logger, verifier);
+        var interceptors = new LinkedList<>(getInterceptors(processingEnv, logger, verifier));
+        Collections.reverse(interceptors);
         for (var interceptor : interceptors)
         {
             endpoint = interceptor.processable(endpoint);
@@ -101,8 +108,11 @@ public abstract class BaseProcessor extends AbstractProcessor implements Process
     /**
      * @return interceptors that will run before {@link #performProcessing(Set, RoundEnvironment)}
      */
-    protected List<ProcessorInterceptor> getInterceptors(ProcessingEnvironment processingEnv, ProcessingLogger logger,
-        ProcessingVerifier verifier)
+    @NotNull
+    protected List<ProcessorInterceptor> getInterceptors(
+        @NotNull ProcessingEnvironment processingEnv,
+        @NotNull ProcessingLogger logger,
+        @NotNull ProcessingVerifier verifier)
     {
         return List.of();
     }
@@ -123,7 +133,7 @@ public abstract class BaseProcessor extends AbstractProcessor implements Process
      * @param pack the package name to write the class to
      * @param cls  the class name to write
      */
-    protected void writeClass(String pack, TypeSpec cls)
+    protected void writeClass(@NotNull String pack,@NotNull TypeSpec cls)
     {
         try
         {
@@ -135,16 +145,12 @@ public abstract class BaseProcessor extends AbstractProcessor implements Process
         }
         catch (IOException e)
         {
-            logger.fail("Failed to write class %s", cls.name);
-            logger.fail("Exception: %s", e.getMessage());
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            sw.flush();
-            logger.fail("Trace: %s", sw.getBuffer());
+            logger.fail(e,true);
         }
     }
 
-    private TypeSpec annotateGenerated(TypeSpec cls)
+    @Contract("_ -> new")
+    private @NotNull TypeSpec annotateGenerated(@NotNull TypeSpec cls)
     {
         return cls.toBuilder().addAnnotation(AnnotationSpec
             .builder(Generated.class)
@@ -164,7 +170,8 @@ public abstract class BaseProcessor extends AbstractProcessor implements Process
      * @param name the name to derive the identifier from
      * @return the identifier
      */
-    protected String getVariableName(String name)
+    @NotNull
+    protected String getVariableName(@NotNull String name)
     {
         return uncapitalize(getClassName(name));
     }
@@ -180,7 +187,8 @@ public abstract class BaseProcessor extends AbstractProcessor implements Process
      * @param name a name that uses kebab case or snake case
      * @return the class identifier
      */
-    protected String getClassName(String name)
+    @NotNull
+    protected String getClassName(@NotNull String name)
     {
         String[] parts = name.split("\\.");
         parts = parts[parts.length - 1].split("[_-]");

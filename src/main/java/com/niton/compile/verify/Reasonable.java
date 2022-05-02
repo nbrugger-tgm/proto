@@ -24,6 +24,6 @@ public interface Reasonable
      */
     default Verifiable because(Class<? extends Annotation> message)
     {
-        return because("it is annotated with %s", message.getName());
+        return because("it is annotated with @%s", message.getSimpleName());
     }
 }

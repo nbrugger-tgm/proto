@@ -36,7 +36,7 @@ public class ProcessingVerifier
         return new ProcessingVerification(
             log,
             e -> e.getKind() == ElementKind.CLASS,
-            format("%s should [not] be a class", elem),
+            format("%s should [not ]be a class", elem),
             elem
         );
     }
@@ -53,7 +53,7 @@ public class ProcessingVerifier
         return new ProcessingVerification(
             log,
             e -> doesElementExtendClass(e, superClass),
-            format("%s should [not] extend %s", element, superClass),
+            format("%s should [not ]extend %s", element, superClass),
             element
         );
     }
@@ -68,7 +68,7 @@ public class ProcessingVerifier
         return new ProcessingVerification(
             log,
             e -> e.getKind() == ElementKind.INTERFACE,
-            format("%s should [not] be an interface", elem),
+            format("%s should [not ]be an interface", elem),
             elem
         );
     }
@@ -82,7 +82,7 @@ public class ProcessingVerifier
         return new ProcessingVerification(
             log,
             e -> e.getKind() == ElementKind.ANNOTATION_TYPE,
-            format("%s should [not] be an annotation", elem),
+            format("%s should [not ]be an annotation", elem),
             elem
         );
     }
@@ -96,7 +96,7 @@ public class ProcessingVerifier
         return new ProcessingVerification(
             log,
             e -> e.getKind() == ElementKind.ENUM,
-            format("%s should [not] be an enum", elem),
+            format("%s should [not ]be an enum", elem),
             elem
         );
     }
@@ -110,7 +110,7 @@ public class ProcessingVerifier
         return new ProcessingVerification(
             log,
             e -> e.getKind() == ElementKind.FIELD,
-            format("%s should [not] be a field", elem),
+            format("%s should [not ]be a field", elem),
             elem
         );
     }
@@ -125,7 +125,7 @@ public class ProcessingVerifier
         return new ProcessingVerification(
             log,
             e -> e.getAnnotation(annotation) != null,
-            format("%s should [not] be annotated with %s", elem, annotation),
+            format("%s should [not ]be annotated with @%s", elem, annotation.getSimpleName()),
             elem
         );
     }
@@ -141,7 +141,7 @@ public class ProcessingVerifier
         return new ProcessingVerification(
             log,
             e -> doesElementImplementClass(e, iFace),
-            format("%s should [not] implement %s", element, iFace),
+            format("%s should [not ]implement %s", element, iFace),
             element
         );
     }

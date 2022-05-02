@@ -2,34 +2,34 @@ package com.niton.compile.processor;
 
 import static java.lang.String.format;
 
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.lang.annotation.Annotation;
 import java.util.Set;
 
-import javax.annotation.processing.ProcessingEnvironment;
+import javax.annotation.processing.Messager;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
+
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Logger for compile time processing.
  */
 public class ProcessingLogger
 {
-    private final ProcessingEnvironment processingEnv;
+    private final Messager messager;
 
-    public ProcessingLogger(ProcessingEnvironment processingEnv)
+    public ProcessingLogger(Messager messager)
     {
-        this.processingEnv = processingEnv;
+        this.messager = messager;
     }
 
     /**
      * This will fail the compilation process with the given exception message.
      */
-    public void fail(IOException exception)
+    public void fail(@NotNull Exception exception)
     {
         fail(exception.getMessage());
     }
@@ -39,7 +39,7 @@ public class ProcessingLogger
      * @param exception the exception that causes the fail
      * @param printStackTrace if true the full stack trace will be printed
      */
-    public void fail(IOException exception,boolean printStackTrace)
+    public void fail(@NotNull Exception exception,boolean printStackTrace)
     {
         fail(exception.getMessage());
         if(printStackTrace)
@@ -57,9 +57,9 @@ public class ProcessingLogger
      * @param msg the message to add to the warning, formatted according to the {@link String#format(String, Object...)} rules
      * @param args the arguments to pass to  {@link String#format(String, Object...)}
      */
-    public void warn(Element element, String msg, Object... args)
+    public void warn(@NotNull Element element, @NotNull String msg, Object... args)
     {
-        processingEnv.getMessager().printMessage(Diagnostic.Kind.MANDATORY_WARNING, format(msg, args), element);
+        messager.printMessage(Diagnostic.Kind.MANDATORY_WARNING, format(msg, args), element);
     }
 
     /**
@@ -67,9 +67,9 @@ public class ProcessingLogger
      * @param msg the message to add to the log, formatted according to the {@link String#format(String, Object...)} rules
      * @param args the arguments to pass to  {@link String#format(String, Object...)}
      */
-    public void info(String msg, Object... args)
+    public void info(@NotNull String msg, Object... args)
     {
-        processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, format(msg, args));
+        messager.printMessage(Diagnostic.Kind.NOTE, format(msg, args));
     }
     /**
      * Adds info to the compilation log, is disabled by maven by default. Similar to the <i>DEBUG</i> log level
@@ -77,9 +77,9 @@ public class ProcessingLogger
      * @param msg the message to add to the log, formatted according to the {@link String#format(String, Object...)} rules
      * @param args the arguments to pass to  {@link String#format(String, Object...)}
      */
-    public void info(Element element, String msg, Object... args)
+    public void info(@NotNull Element element,@NotNull String msg, Object... args)
     {
-        processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, format(msg, args), element);
+        messager.printMessage(Diagnostic.Kind.NOTE, format(msg, args), element);
     }
 
     /**
@@ -88,9 +88,9 @@ public class ProcessingLogger
      * @param msg the message to add to the error, formatted according to the {@link String#format(String, Object...)} rules
      * @param args the arguments to pass to  {@link String#format(String, Object...)}
      */
-    public void fail(Element element, String msg, Object... args)
+    public void fail(@NotNull Element element, @NotNull String msg, Object... args)
     {
-        processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, format(msg, args), element);
+        messager.printMessage(Diagnostic.Kind.ERROR, format(msg, args), element);
     }
 
     /**
@@ -99,9 +99,9 @@ public class ProcessingLogger
      * @param msg the message to add to the error, formatted according to the {@link String#format(String, Object...)} rules
      * @param args the arguments to pass to  {@link String#format(String, Object...)}
      */
-    public void fail(String msg, Object... args)
+    public void fail(@NotNull String msg, Object... args)
     {
-        processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, format(msg, args));
+        messager.printMessage(Diagnostic.Kind.ERROR, format(msg, args));
     }
 
     /**
@@ -109,7 +109,7 @@ public class ProcessingLogger
      * @param set the set of annotations that are being processed
      * @param roundEnv the current round environment
      */
-    public void logRoundInfo(Set<? extends TypeElement> set, RoundEnvironment roundEnv)
+    public void logRoundInfo(@NotNull Set<? extends TypeElement> set, @NotNull RoundEnvironment roundEnv)
     {
         info("[%s] Process :%n\tis last: %s%n\thas error:%s%n\tAnnotations : %s%n\tInputs : %s",
             getClass().getSimpleName(),

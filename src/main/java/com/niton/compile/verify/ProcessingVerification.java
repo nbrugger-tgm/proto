@@ -53,10 +53,10 @@ public class ProcessingVerification implements Reasonable, Verifiable
      * Inverts the verification and adapts the message
      * @return this
      */
-    public Reasonable not()
+    public<T extends Reasonable & Verifiable> T not()
     {
         this.inverted = true;
-        return this;
+        return (T) this;
     }
 
     @Override
@@ -96,7 +96,7 @@ public class ProcessingVerification implements Reasonable, Verifiable
     @Override
     public boolean isValid()
     {
-        return inverted == predicate.getAsBoolean();
+        return inverted != predicate.getAsBoolean();
     }
 
     private String formatMessage()
@@ -104,12 +104,12 @@ public class ProcessingVerification implements Reasonable, Verifiable
         if (inverted)
             return unescape(message.replaceAll("(?<!\\\\)[\\[\\]]", ""));//replace all non-escaped brackets
         else
-            return unescape(message.replaceAll("(?<!\\\\)\\[.+]",
+            return unescape(message.replaceAll("(?<!\\\\)\\[.+(?<!\\\\)]",
                 "")); //replace all non-escaped brackets and the content between them
     }
 
     private String unescape(String string)
     {
-        return string.replaceAll("(?<=\\\\)\\[", "[").replaceAll("(?<=\\\\)]", "]");
+        return string.replace("\\[", "[").replace("\\]", "]");
     }
 }
