@@ -25,7 +25,7 @@ that provide high level access to the java processing API.
 
 The bugfix mentioned above will automatically be applied to your project if you don' t disable it manually.
 
-To generate classes it is highly recommended to use JavaPoet (included) and the ``writeClass()`` method.
+To generate classes it is highly recommended to use JavaPoet (included,[Introduction to JavaPoet | Baeldung](https://www.baeldung.com/java-poet)) and the ``writeClass()`` method.
 
 ### Examples
 
