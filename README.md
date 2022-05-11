@@ -1,8 +1,8 @@
 ## Proto
 
-Processpo Tools
+Annotation **Pro**cessor **To**ols
 
-_test coverage_: 96,4%
+![testcoverage](https://img.shields.io/badge/coverage-95%2C4%25-green)
 
 ### About
 
@@ -10,7 +10,7 @@ This is a collection of classes that helps with writing Java Annotation Processo
 
 - Verification of annotated elements
 - Logging at compile time
-- A bugfix for a bug in the Java compiler AP API
+- A bugfix for a bug in the Java compiler AP API [[JDK-8256826] Source generated in last round not visible to other sources - Java Bug System](https://bugs.openjdk.java.net/browse/JDK-8256826)
 
 ### Usage
 
