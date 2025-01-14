@@ -8,6 +8,7 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.TypeMirror;
 
 import com.niton.compile.verify.ProcessingVerification;
 
@@ -50,12 +51,36 @@ public class ProcessingVerifier
      */
     public ProcessingVerification doesExtend(Element element, Class<?> superClass)
     {
+        return doesExtend(element, superClass.getName());
+    }
+
+    /**
+     * verifies that the element extends the given class
+     *
+     * @param element the class to verify
+     * @param superClass the class that element should extend
+     * @return the verification, can be used to fail or warn.
+     */
+    public ProcessingVerification doesExtend(Element element, TypeMirror superClass)
+    {
         return new ProcessingVerification(
-            log,
-            e -> doesElementExtendClass(e, superClass),
-            format("%s should [not ]extend %s", element, superClass),
-            element
+                log,
+                e -> doesElementExtendClass(e, superClass),
+                format("%s should [not ]extend %s", element, superClass),
+                element
         );
+    }
+
+    /**
+     * verifies that the element extends the given class
+     *
+     * @param element the class to verify
+     * @param superClass the fully qualified class name that element should extend
+     * @return the verification, can be used to fail or warn.
+     */
+    public ProcessingVerification doesExtend(Element element, String superClass)
+    {
+        return doesExtend(element, env.getElementUtils().getTypeElement(superClass).asType());
     }
 
     /**
@@ -154,11 +179,10 @@ public class ProcessingVerifier
         return env.getTypeUtils().isAssignable(element.asType(), iFaceType);
     }
 
-    private boolean doesElementExtendClass(Element element, Class<?> superClass)
+    private boolean doesElementExtendClass(Element element, TypeMirror superType)
     {
         if (!(element instanceof TypeElement))
             return false;
-        var superType = env.getElementUtils().getTypeElement(superClass.getName()).asType();
         return env.getTypeUtils().isSubtype(element.asType(), superType);
     }
 }

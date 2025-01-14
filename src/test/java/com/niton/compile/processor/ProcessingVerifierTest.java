@@ -13,15 +13,22 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.Serializable;
+import java.lang.annotation.Annotation;
 import java.util.Arrays;
+import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.type.TypeVisitor;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
@@ -32,6 +39,8 @@ import org.mockito.ArgumentCaptor;
 
 import com.niton.compile.verify.ProcessingVerification;
 import com.niton.compile.verify.Verifiable;
+import org.mockito.Mockito;
+import org.mockito.internal.stubbing.answers.AnswersWithDelay;
 
 class ProcessingVerifierTest
 {
@@ -65,12 +74,18 @@ class ProcessingVerifierTest
     {
         var verifier = new ProcessingVerifier(env, logger);
         var elem = mock(TypeElement.class);
-        when(typeUtil.isSubtype(any(), any())).thenReturn(true);
-        when(elementUtil.getTypeElement(any())).thenReturn(mock(TypeElement.class));
+        var elemType = mock(TypeMirror.class);
+        var stringTypeElem = mock(TypeElement.class);
+        var stringType = mock(DeclaredType.class);
 
-        assertThat(verifier.doesExtend(elem, Number.class).isValid()).isTrue();
+        when(elem.asType()).thenReturn(elemType);
+        when(typeUtil.isSubtype(elemType, stringType)).thenReturn(true);
+        when(elementUtil.getTypeElement("java.lang.String")).thenReturn(stringTypeElem);
+        when(stringTypeElem.asType()).thenReturn(stringType);
+        when(stringType.toString()).thenReturn("class java.lang.String");
 
-        expectLog(verifier.doesExtend(elem, Number.class).not(), elem, "should not extend class java.lang.Number");
+        assertThat(verifier.doesExtend(elem, String.class).isValid()).isTrue();
+        expectLog(verifier.doesExtend(elem, String.class).not(), elem, "should not extend class java.lang.String");
     }
 
     @Test
@@ -78,11 +93,17 @@ class ProcessingVerifierTest
     {
         var verifier = new ProcessingVerifier(env, logger);
         var elem = mock(TypeElement.class);
-        when(typeUtil.isSubtype(any(), any())).thenReturn(false);
-        when(elementUtil.getTypeElement(any())).thenReturn(mock(TypeElement.class));
+        var elemType = mock(TypeMirror.class);
+        var stringTypeElem = mock(TypeElement.class);
+        var stringType = mock(DeclaredType.class);
+
+        when(elem.asType()).thenReturn(elemType);
+        when(typeUtil.isSubtype(elemType, stringType)).thenReturn(false);
+        when(elementUtil.getTypeElement("java.lang.String")).thenReturn(stringTypeElem);
+        when(stringTypeElem.asType()).thenReturn(stringType);
+        when(stringType.toString()).thenReturn("class java.lang.String");
 
         assertThat(verifier.doesExtend(elem, String.class).isValid()).isFalse();
-
         expectLog(verifier.doesExtend(elem, String.class), elem, "should extend class java.lang.String");
     }
 
