@@ -1,19 +1,16 @@
 package com.niton.compile.processor;
 
-import static java.lang.String.format;
-
-import java.io.IOException;
-import java.lang.annotation.Annotation;
-import java.util.Set;
+import com.squareup.javapoet.JavaFile;
+import com.squareup.javapoet.TypeSpec;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
-
-import com.squareup.javapoet.JavaFile;
-import com.squareup.javapoet.TypeSpec;
+import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.util.Set;
 /**
  * This processor interceptor should be used as base of a processor to bypass
  * the bug <a href="https://bugs.openjdk.java.net/browse/JDK-8256826">JDK-8256826</a> in OpenJDK javac.
@@ -29,6 +26,8 @@ class LastRoundInterceptor extends ProcessorInterceptor
     private static final String LAST_ROUND_BUG = "jdk_8256826_bug";
     private int round;
     private boolean processingOver;
+    private static int instances = 0;
+    private final int instance = instances++;
 
     protected LastRoundInterceptor(ProcessingEnvironment processingEnv, ProcessingLogger logger,
         ProcessingVerifier verifier)
@@ -44,7 +43,7 @@ class LastRoundInterceptor extends ProcessorInterceptor
             logger.info("Skip processing of javac last round");
             return false;//the javac last round is not allowed to be used
         }
-        var bugfileName = String.format("%s$%s$round%d", getClass().getSimpleName(), LAST_ROUND_BUG, round);
+        var bugfileName = String.format("%s%d$%s$round%d", getClass().getSimpleName(),instance, LAST_ROUND_BUG, round);
         var fakeLastRound = isFakeLastRound(roundEnv);
 
         if (!fakeLastRound)
