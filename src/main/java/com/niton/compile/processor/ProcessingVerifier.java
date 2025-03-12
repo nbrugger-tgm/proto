@@ -11,6 +11,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 
 import com.niton.compile.verify.ProcessingVerification;
+import com.niton.compile.verify.Verifiable;
 
 /**
  * utility class for verifying elements (methods, annotations, fields, etc.)
@@ -184,5 +185,14 @@ public class ProcessingVerifier
         if (!(element instanceof TypeElement))
             return false;
         return env.getTypeUtils().isSubtype(element.asType(), superType);
+    }
+
+    public Verifiable isA(Element element, ElementKind elementKind) {
+        return new ProcessingVerification(
+                log,
+                e -> e.getKind() == elementKind,
+                format("%s should [not ]be a %s", element, elementKind.name().toLowerCase()),
+                element
+        );
     }
 }
