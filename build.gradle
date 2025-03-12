@@ -27,8 +27,9 @@ test {
     useJUnitPlatform()
 }
 java {
-    sourceCompatibility(11)
-    targetCompatibility(11)
+    toolchain {
+        version(11)
+    }
 }
 
 publishing {
