@@ -21,9 +21,9 @@ import javax.lang.model.element.TypeElement;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-import com.squareup.javapoet.AnnotationSpec;
-import com.squareup.javapoet.JavaFile;
-import com.squareup.javapoet.TypeSpec;
+import com.palantir.javapoet.AnnotationSpec;
+import com.palantir.javapoet.JavaFile;
+import com.palantir.javapoet.TypeSpec;
 
 /**
  * This should be used as the base for annotation processors, instead of {@link AbstractProcessor} since it provides
@@ -141,7 +141,7 @@ public abstract class BaseProcessor extends AbstractProcessor implements Process
             var javaFile = JavaFile.builder(pack, cls).build();
             javaFile.writeTo(processingEnv.getFiler());
             if (logClassWriting)
-                logger.info("Generated class: %s", cls.name);
+                logger.info("Generated class: %s", cls.name());
         }
         catch (IOException e)
         {

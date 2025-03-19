@@ -1,5 +1,5 @@
 module niton.proto {
-  requires com.squareup.javapoet;
+  requires com.palantir.javapoet;
   requires java.compiler;
   requires org.apache.commons.lang3;
   requires static org.jetbrains.annotations;

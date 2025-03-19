@@ -12,7 +12,7 @@ repositories {
 }
 
 dependencies {
-    api "com.squareup:javapoet:1.11.0"
+    api("com.palantir.javapoet:javapoet:0.6.0")
     implementation "org.apache.commons:commons-lang3:3.12.0"
     compileOnly "org.jetbrains:annotations:23.0.0"
 
@@ -28,7 +28,7 @@ test {
 }
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(11)
+        languageVersion = JavaLanguageVersion.of(17)
     }
 }
 
