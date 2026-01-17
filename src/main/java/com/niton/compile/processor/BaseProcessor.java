@@ -199,4 +199,8 @@ public abstract class BaseProcessor extends AbstractProcessor implements Process
 
         return String.join("", parts);
     }
+
+    public ProcessingEnvironment getProcessingEnvironment() {
+        return processingEnv;
+    }
 }
