@@ -116,7 +116,7 @@ public class ProcessingLogger
             roundEnv.processingOver(),
             roundEnv.errorRaised(),
             set,
-            roundEnv.getElementsAnnotatedWithAny(set.toArray(TypeElement[]::new)));
+            roundEnv.getRootElements());
     }
 
 }

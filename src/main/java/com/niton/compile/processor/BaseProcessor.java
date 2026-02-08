@@ -96,7 +96,7 @@ public abstract class BaseProcessor extends AbstractProcessor implements Process
     private void applyInterceptors(@NotNull ProcessingEnvironment processingEnv)
     {
         if (applyJavacBugWorkaround())
-            endpoint = new LastRoundInterceptor(processingEnv, logger, verifier).processable(endpoint);
+            endpoint = new LastRoundInterceptor(processingEnv, logger, verifier, this.getClass().getSimpleName()).processable(endpoint);
         var interceptors = new LinkedList<>(getInterceptors(processingEnv, logger, verifier));
         Collections.reverse(interceptors);
         for (var interceptor : interceptors)

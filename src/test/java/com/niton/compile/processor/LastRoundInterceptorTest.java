@@ -49,7 +49,7 @@ class LastRoundInterceptorTest
     @Test
     void skipOnLastRound()
     {
-        LastRoundInterceptor lri = new LastRoundInterceptor(env, mock(ProcessingLogger.class), null);
+        LastRoundInterceptor lri = new LastRoundInterceptor(env, mock(ProcessingLogger.class), null, "test");
         var round = mock(RoundEnvironment.class);
         var processor = mock(Processable.class);
         when(round.processingOver()).thenReturn(true);
@@ -60,7 +60,7 @@ class LastRoundInterceptorTest
     @Test
     void fakeLastRound()
     {
-        LastRoundInterceptor lri = new LastRoundInterceptor(env, mock(ProcessingLogger.class), null);
+        LastRoundInterceptor lri = new LastRoundInterceptor(env, mock(ProcessingLogger.class), null, "test");
 
         var processor = mock(Processable.class);
         when(processor.process(any(), any())).thenReturn(true);
@@ -79,7 +79,7 @@ class LastRoundInterceptorTest
     @Test
     void stopAfterFakeRound()
     {
-        LastRoundInterceptor lri = new LastRoundInterceptor(env, mock(ProcessingLogger.class), null);
+        LastRoundInterceptor lri = new LastRoundInterceptor(env, mock(ProcessingLogger.class), null, "test");
 
         var processor = mock(Processable.class);
         when(processor.process(any(), any())).thenReturn(true);
@@ -97,7 +97,7 @@ class LastRoundInterceptorTest
     @Test
     void normalRound()
     {
-        LastRoundInterceptor lri = new LastRoundInterceptor(env, mock(ProcessingLogger.class), null);
+        LastRoundInterceptor lri = new LastRoundInterceptor(env, mock(ProcessingLogger.class), null, "test");
 
         var processor = mock(Processable.class);
         when(processor.process(any(), any())).thenReturn(true);
@@ -118,7 +118,7 @@ class LastRoundInterceptorTest
     @Test
     void proxyEnvironment()
     {
-        LastRoundInterceptor lri = new LastRoundInterceptor(env, mock(ProcessingLogger.class), null);
+        LastRoundInterceptor lri = new LastRoundInterceptor(env, mock(ProcessingLogger.class), null, "test");
 
         var processor = mock(Processable.class);
         when(processor.process(any(), any())).thenReturn(true);

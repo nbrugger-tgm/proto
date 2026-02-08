@@ -185,6 +185,8 @@ class BaseProcessorTest
     void applyingJavacFix()
     {
         processor = getProcessor(true);
+        var messager = mock(Messager.class);
+        when(env.getMessager()).thenReturn(messager);
         processor.init(env);
         var mockRound = mock(RoundEnvironment.class);
         assertThat(processor.process(null, mockRound)).isTrue();

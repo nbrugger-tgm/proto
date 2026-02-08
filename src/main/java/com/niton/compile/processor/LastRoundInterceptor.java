@@ -26,29 +26,42 @@ class LastRoundInterceptor extends ProcessorInterceptor
     private static final String LAST_ROUND_BUG = "jdk_8256826_bug";
     private int round;
     private boolean processingOver;
-    private static int instances = 0;
-    private final int instance = instances++;
+    private final String processorClassName;
 
-    protected LastRoundInterceptor(ProcessingEnvironment processingEnv, ProcessingLogger logger,
-        ProcessingVerifier verifier)
-    {
+    protected LastRoundInterceptor(
+        ProcessingEnvironment processingEnv,
+        ProcessingLogger logger,
+        ProcessingVerifier verifier,
+        String processorClassName
+    ) {
         super(processingEnv, logger, verifier);
+        this.processorClassName = processorClassName;
     }
 
     @Override
-    public final boolean process(Set<? extends TypeElement> set, RoundEnvironment roundEnv, Processable processor)
-    {
-        if (roundEnv.processingOver() || processingOver)
-        {
-            logger.info("Skip processing of javac last round");
+    public final boolean process(Set<? extends TypeElement> set, RoundEnvironment roundEnv, Processable processor) {
+        if(roundEnv.processingOver() && !processingOver) {
+            logger.fail(new IllegalStateException("javac last round occured before a last round was faked, this should not happen"));
+            return false;
+        }
+        if (roundEnv.processingOver() || processingOver) {
+            logger.info(
+                "[%s] Processor %s already processed their last round, skipping round",
+                getClass().getSimpleName(),
+                processorClassName
+            ); // I do not understand why javac calls this mutltiple times
+            //sometimes there are many empty rounds after the "faked" last round (empty as in no root elements)
+            //which i do not understand
+
             return false;//the javac last round is not allowed to be used
         }
-        var bugfileName = String.format("%s%d$%s$round%d", getClass().getSimpleName(),instance, LAST_ROUND_BUG, round);
+        var bugfileName = String.format("%s$%s$round%d", processorClassName, LAST_ROUND_BUG, round);
         var fakeLastRound = isFakeLastRound(roundEnv);
 
-        if (!fakeLastRound)
-        {
-            writeDummyClass(bugfileName,processingEnv);
+        if (!fakeLastRound) {
+            writeDummyClass(bugfileName, processingEnv);
+        } else {
+            logger.info("[%s] Fake last round for %s", getClass().getSimpleName(), processorClassName);
         }
         round++;
         processingOver = fakeLastRound;
