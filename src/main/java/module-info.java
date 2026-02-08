@@ -6,4 +6,5 @@ module niton.proto {
 
   exports com.niton.compile.processor;
   exports com.niton.compile.verify;
+  exports com.niton.compile;
 }
